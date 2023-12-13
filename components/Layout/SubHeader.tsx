@@ -1,6 +1,35 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { ChevronDown } from 'lucide-react'
 import { Input } from '@nextui-org/react'
+import { cn } from '@/lib/utils'
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu'
+import {
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownSection,
+  DropdownItem,
+} from '@nextui-org/react'
+
+const subHeaderLinks = [
+  { id: 1, content: 'Discover', key: 'discover', href: '/', path: /^[/]$/ },
+  { id: 2, content: 'Browse', key: 'browse', href: '/browse', path: '/browse' },
+  { id: 3, content: 'News', key: 'news', href: '/news', path: '/news' },
+]
 
 const SubHeader = () => {
+  const pathname = usePathname()
+
   return (
     <div className="sticky top-0 z-[999] h-[100px] w-full bg-[#121212]">
       <div className="relative z-[999] mx-auto flex h-full w-3/4 max-w-[1600px] justify-between">
@@ -20,13 +49,13 @@ const SubHeader = () => {
                 inputWrapper: [
                   'shadow-xl',
                   'bg-default-200/50',
-                  'dark:bg-default/60',
+                  'dark:bg-default/20',
                   'backdrop-blur-xl',
                   'backdrop-saturate-200',
                   'hover:bg-default-200/70',
                   'dark:hover:bg-default/70',
                   'group-data-[focused=true]:bg-default-200/50',
-                  'dark:group-data-[focused=true]:bg-default/60',
+                  'dark:group-data-[focused=true]:bg-default/70',
                   '!cursor-text',
                   'h-[40px]',
                   'p-0',
@@ -39,8 +68,95 @@ const SubHeader = () => {
             />
           </div>
         </div>
-        <div>2</div>
-        <div>3</div>
+        <div className="ml-5 flex h-full w-full shrink flex-row items-center">
+          <span className="hidden xl:block">
+            <NavigationMenu>
+              <NavigationMenuList>
+                {subHeaderLinks.map((link) => (
+                  <NavigationMenuItem key={link.id}>
+                    <Link
+                      href={link.href}
+                      legacyBehavior
+                      passHref
+                      className="transition-opacity delay-0 duration-150 ease-in-out"
+                    >
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle({
+                          className: [
+                            pathname.match(link.path)
+                              ? 'bg-transparent text-white hover:cursor-default hover:bg-transparent focus:bg-transparent'
+                              : 'bg-transparent text-[#858585] hover:bg-transparent focus:bg-transparent',
+                          ],
+                        })}
+                      >
+                        {link.content}
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+          </span>
+          {/* Dropdown 1280px */}
+          <span className="hidden lg:block xl:hidden">
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  color="default"
+                  variant="bordered"
+                  className="border-none capitalize hover:bg-transparent"
+                  endContent={<ChevronDown className={`h-4 w-4`} />}
+                >
+                  {pathname.match(/^[/]$/)
+                    ? 'Discover'
+                    : pathname.match('/browse')
+                      ? 'Browse'
+                      : pathname.match('/news')
+                        ? 'News'
+                        : null}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Dropdown Navigation" variant="light">
+                <DropdownItem
+                  key="discover"
+                  href="/"
+                  className={cn(
+                    pathname.match(/^[/]$/)
+                      ? 'text-white hover:transition-none'
+                      : 'text-[#858585]'
+                  )}
+                >
+                  Discover
+                </DropdownItem>
+                <DropdownItem
+                  key="browse"
+                  href="/browse"
+                  className={cn(
+                    pathname.match('/browse')
+                      ? 'text-white hover:transition-none'
+                      : 'text-[#858585]'
+                  )}
+                >
+                  Browse
+                </DropdownItem>
+                <DropdownItem
+                  key="news"
+                  href="/news"
+                  className={cn(
+                    pathname.match('/news')
+                      ? 'text-white hover:transition-none'
+                      : 'text-[#858585]'
+                  )}
+                >
+                  News
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </span>
+          {/* Dropdown 1024px */}
+          <span className="lg:hidden"></span>
+        </div>
+        <div className="ml-5 flex h-full grow-0 flex-row items-center"></div>
       </div>
     </div>
   )
